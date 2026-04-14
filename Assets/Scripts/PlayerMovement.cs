@@ -10,11 +10,13 @@ public class PlayerMovement : MonoBehaviour
     public float gravityDirection = 1f;
 
     private Rigidbody2D rb;
+    private Animator animator;
     private bool isGrounded;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -22,13 +24,22 @@ public class PlayerMovement : MonoBehaviour
         HandleMovement();
         HandleJump();
         HandleGravityFlip();
+        UpdateAnimations();
     }
 
     void HandleMovement()
     {
         float move = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(move * moveSpeed, rb.linearVelocity.y);
-        // If linearVelocity gives errors in your Unity version, use rb.velocity instead
+
+        if (move > 0)
+        {
+            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+        }
+        else if (move < 0)
+        {
+            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+        }
     }
 
     void HandleJump()
@@ -56,6 +67,16 @@ public class PlayerMovement : MonoBehaviour
         Vector3 scale = transform.localScale;
         scale.y *= -1f;
         transform.localScale = scale;
+    }
+
+    void UpdateAnimations()
+    {
+        float move = Mathf.Abs(Input.GetAxisRaw("Horizontal"));
+        float verticalVelocity = rb.linearVelocity.y * gravityDirection;
+
+        animator.SetFloat("Speed", move);
+        animator.SetBool("IsGrounded", isGrounded);
+        animator.SetFloat("VerticalVelocity", verticalVelocity);
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
