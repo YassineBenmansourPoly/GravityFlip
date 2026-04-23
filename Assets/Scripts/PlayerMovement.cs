@@ -11,16 +11,21 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Animator animator;
+    private SpriteRenderer sr;
     private bool isGrounded;
+    private bool isLevelComplete = false;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        sr = GetComponent<SpriteRenderer>();
     }
 
     void Update()
     {
+        if (isLevelComplete) return;
+
         HandleMovement();
         HandleJump();
         HandleGravityFlip();
@@ -77,6 +82,24 @@ public class PlayerMovement : MonoBehaviour
         animator.SetFloat("Speed", move);
         animator.SetBool("IsGrounded", isGrounded);
         animator.SetFloat("VerticalVelocity", verticalVelocity);
+    }
+
+    public void CompleteLevel()
+    {
+        isLevelComplete = true;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.simulated = false;
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", 0f);
+        }
+
+        if (sr != null)
+        {
+            sr.enabled = false;
+        }
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
