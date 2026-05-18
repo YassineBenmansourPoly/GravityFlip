@@ -1,10 +1,16 @@
 using UnityEngine;
+using System.Collections;
 
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
     public float moveSpeed = 5f;
     public float jumpForce = 10f;
+
+    [Header("Dash")]
+    public float dashSpeed = 15f;
+    public float dashDuration = 0.15f;
+    public float dashCooldown = 0.4f;
 
     [Header("Gravity")]
     public float gravityDirection = 1f;
@@ -20,6 +26,8 @@ public class PlayerMovement : MonoBehaviour
     private SpriteRenderer sr;
 
     private bool isGrounded;
+    private bool isDashing;
+    private bool canDash = true;
     private bool isLevelComplete = false;
 
     void Start()
@@ -36,9 +44,14 @@ public class PlayerMovement : MonoBehaviour
     {
         if (isLevelComplete) return;
 
-        HandleMovement();
-        HandleJump();
-        HandleGravityFlip();
+        if (!isDashing)
+        {
+            HandleMovement();
+            HandleJump();
+            HandleGravityFlip();
+        }
+
+        HandleDash();
         UpdateAnimations();
     }
 
@@ -67,6 +80,43 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void HandleDash()
+    {
+        if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && IsActuallyGrounded())
+        {
+            StartCoroutine(Dash());
+        }
+    }
+
+    IEnumerator Dash()
+    {
+        isDashing = true;
+        canDash = false;
+
+        float originalGravityScale = rb.gravityScale;
+        rb.gravityScale = 0f;
+
+        float inputDirection = Input.GetAxisRaw("Horizontal");
+
+        float dashDirection = inputDirection != 0
+            ? inputDirection
+            : (transform.localScale.x > 0f ? 1f : -1f);
+
+        rb.linearVelocity = new Vector2(dashDirection * dashSpeed, 0f);
+
+        yield return new WaitForSeconds(dashDuration);
+
+        rb.gravityScale = originalGravityScale;
+        isDashing = false;
+
+        yield return new WaitForSeconds(dashCooldown);
+
+        if (IsActuallyGrounded())
+        {
+            canDash = true;
+        }
+    }
+
     bool IsActuallyGrounded()
     {
         if (playerCollider == null) return false;
@@ -86,8 +136,6 @@ public class PlayerMovement : MonoBehaviour
 
         return hit.collider != null;
     }
-
-
 
     void HandleGravityFlip()
     {
@@ -173,6 +221,7 @@ public class PlayerMovement : MonoBehaviour
             if (contactIsAtFeet)
             {
                 isGrounded = true;
+                canDash = true;
                 return;
             }
         }
