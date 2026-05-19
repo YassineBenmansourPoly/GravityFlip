@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - Ground
+  - Grass
+  - Metal
+  - Rock
   layers:
   - Default
   - TransparentFX
