@@ -4,11 +4,13 @@ public class AudioManager : MonoBehaviour
 {
     public static AudioManager instance;
     public AudioSource sfxSource;
+    public AudioSource musicSource;
 
-    [Header("Movement Sounds")]
+    [Header("SFX")]
     public AudioClip jumpSound;
     public AudioClip flipSound;
     public AudioClip landingSound;
+    public AudioClip gameOverSound;
 
     [Header("Footsteps")]
     public AudioClip[] grassSteps;
@@ -25,16 +27,19 @@ public class AudioManager : MonoBehaviour
     public void PlayFootstep(string surface)
     {
         AudioClip clip = null;
-        if (surface == "Grass" && grassSteps.Length > 0)
-            clip = grassSteps[Random.Range(0, grassSteps.Length)];
-        else if (surface == "Rock" && rockSteps.Length > 0)
-            clip = rockSteps[Random.Range(0, rockSteps.Length)];
+        if (surface == "Grass" && grassSteps.Length > 0) clip = grassSteps[Random.Range(0, grassSteps.Length)];
+        else if (surface == "Rock" && rockSteps.Length > 0) clip = rockSteps[Random.Range(0, rockSteps.Length)];
 
         if (clip != null)
         {
-            // Add this line to make footsteps sound natural!
             sfxSource.pitch = Random.Range(0.85f, 1.15f);
-            sfxSource.PlayOneShot(clip, 0.5f);
+            sfxSource.PlayOneShot(clip, 0.4f);
         }
+    }
+
+    public void TriggerGameOver()
+    {
+        if (musicSource != null) musicSource.Stop();
+        if (gameOverSound != null) sfxSource.PlayOneShot(gameOverSound);
     }
 }

@@ -110,6 +110,13 @@ public class PlayerMovement : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // If we hit a Hazard, just tell the GameManager to handle it
+        if (collision.gameObject.CompareTag("Hazard"))
+        {
+            FindAnyObjectByType<GameManager>().GameOver();
+            return;
+        }
+
         if (IsGroundLayer(collision.gameObject))
         {
             currentSurface = collision.gameObject.tag;

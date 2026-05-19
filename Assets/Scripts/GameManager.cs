@@ -7,7 +7,16 @@ public class GameManager : MonoBehaviour
 
     public void GameOver()
     {
-        gameOverPanel.SetActive(true);
+        // 1. Tell Audio to stop music and play death sound
+        if (AudioManager.instance != null)
+        {
+            AudioManager.instance.TriggerGameOver(); // Name must match AudioManager exactly!
+        }
+
+        // 2. Show the UI
+        if (gameOverPanel != null) gameOverPanel.SetActive(true);
+
+        // 3. Stop Time 
         Time.timeScale = 0f;
     }
 
