@@ -59,16 +59,11 @@ public class MovingSawTrap : MonoBehaviour
 
     void KillPlayer(GameObject player)
     {
-        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        PlayerHealth health = player.GetComponent<PlayerHealth>();
 
-        if (gameManager != null)
+        if (health != null)
         {
-            gameManager.GameOver();
-        }
-
-        if (disablePlayerOnHit)
-        {
-            player.SetActive(false);
+            health.TakeDamage(1);
         }
     }
 }

@@ -55,14 +55,12 @@ public class FireToggleTrap : MonoBehaviour
 
         if (collision.CompareTag("Player"))
         {
-            GameManager gameManager = FindFirstObjectByType<GameManager>();
+            PlayerHealth health = collision.GetComponent<PlayerHealth>();
 
-            if (gameManager != null)
+            if (health != null)
             {
-                gameManager.GameOver();
+                health.TakeDamage(1);
             }
-
-            collision.gameObject.SetActive(false);
         }
     }
 }

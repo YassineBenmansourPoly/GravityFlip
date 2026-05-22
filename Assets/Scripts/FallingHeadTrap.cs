@@ -134,14 +134,7 @@ public class FallingHeadTrap : MonoBehaviour
 
     void KillPlayer(GameObject player)
     {
-        GameManager gameManager = FindFirstObjectByType<GameManager>();
-
-        if (gameManager != null)
-        {
-            gameManager.GameOver();
-        }
-
-        player.SetActive(false);
+        player.SendMessage("TakeDamage", 1, SendMessageOptions.DontRequireReceiver);
     }
 
     private void OnDrawGizmosSelected()
