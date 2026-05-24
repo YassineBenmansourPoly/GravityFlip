@@ -7,6 +7,11 @@ public class ExitDoor : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             Debug.Log("LEVEL COMPLETE");
+
+            if (AudioManager.instance != null)
+                AudioManager.instance.TriggerVictory();
+
+            if (StarManager.instance != null) StarManager.instance.OnLevelComplete();
         }
     }
 }

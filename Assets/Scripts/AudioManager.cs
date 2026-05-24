@@ -6,10 +6,16 @@ public class AudioManager : MonoBehaviour
     public AudioSource sfxSource;
     public AudioSource musicSource;
 
-    [Header("SFX")]
+    [Header("Movement Sounds")]
     public AudioClip jumpSound;
     public AudioClip flipSound;
+    public AudioClip dashSound;
     public AudioClip landingSound;
+
+    [Header("Collection & Victory")]
+    public AudioClip starSound;    
+    public AudioClip victorySound; 
+    public AudioClip hurtSound;
     public AudioClip gameOverSound;
 
     [Header("Footsteps")]
@@ -41,5 +47,12 @@ public class AudioManager : MonoBehaviour
     {
         if (musicSource != null) musicSource.Stop();
         if (gameOverSound != null) sfxSource.PlayOneShot(gameOverSound);
+    }
+
+    // NEW: Handle the Victory Audio
+    public void TriggerVictory()
+    {
+        if (musicSource != null) musicSource.Stop(); // Stop level music
+        if (victorySound != null) sfxSource.PlayOneShot(victorySound);
     }
 }

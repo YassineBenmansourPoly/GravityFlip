@@ -90,12 +90,14 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    // --- YASSINE'S DASHING LOGIC ---
+    // --- DASHING LOGIC ---
     void HandleDash()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && IsActuallyGrounded())
         {
             StartCoroutine(Dash());
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.dashSound);
         }
     }
 
