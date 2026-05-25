@@ -15,6 +15,10 @@ public class PlayerMovement : MonoBehaviour
     [Header("Gravity")]
     public float gravityDirection = 1f;
 
+    [Header("Collision Safety")]
+    [SerializeField] private bool useContinuousCollision = true;
+    [SerializeField] private float maxFallSpeed = 25f;
+
     [Header("Ground Detection")]
     [SerializeField] private LayerMask groundLayer;
     [SerializeField] private Collider2D playerCollider;
@@ -38,6 +42,9 @@ public class PlayerMovement : MonoBehaviour
 
         if (playerCollider == null)
             playerCollider = GetComponent<Collider2D>();
+
+        if (useContinuousCollision)
+            rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
     }
 
     void Update()
@@ -53,6 +60,13 @@ public class PlayerMovement : MonoBehaviour
 
         HandleDash();
         UpdateAnimations();
+    }
+
+    void FixedUpdate()
+    {
+        if (isLevelComplete || isDashing) return;
+
+        ClampFallSpeed();
     }
 
     void HandleMovement()
@@ -85,6 +99,20 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && IsActuallyGrounded())
         {
             StartCoroutine(Dash());
+        }
+    }
+
+    void ClampFallSpeed()
+    {
+        if (maxFallSpeed <= 0f) return;
+
+        Vector2 velocity = rb.linearVelocity;
+        float fallingSpeed = -velocity.y * gravityDirection;
+
+        if (fallingSpeed > maxFallSpeed)
+        {
+            velocity.y = -maxFallSpeed * gravityDirection;
+            rb.linearVelocity = velocity;
         }
     }
 

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class MovingSawTrap : MonoBehaviour
 {
+    private const float ForcedRotationSpeed = 150f;
+
     [Header("Movement")]
     public float moveDistance = 4f;
     public float speed = 2f;
@@ -10,8 +12,23 @@ public class MovingSawTrap : MonoBehaviour
     [Header("Damage")]
     public bool disablePlayerOnHit = true;
 
+    [Header("Animation")]
+    public bool spinSaw = true;
+    public float rotationSpeed = 150f;
+    public bool reverseSpinWithMovement = true;
+
     private Vector3 startPosition;
     private int direction;
+
+    void Awake()
+    {
+        rotationSpeed = ForcedRotationSpeed;
+    }
+
+    void OnValidate()
+    {
+        rotationSpeed = ForcedRotationSpeed;
+    }
 
     void Start()
     {
@@ -21,6 +38,8 @@ public class MovingSawTrap : MonoBehaviour
 
     void Update()
     {
+        AnimateSaw();
+
         transform.position += Vector3.right * direction * speed * Time.deltaTime;
 
         float distanceFromStart = transform.position.x - startPosition.x;
@@ -39,6 +58,15 @@ public class MovingSawTrap : MonoBehaviour
             else if (distanceFromStart >= 0f)
                 direction = -1;
         }
+    }
+
+    void AnimateSaw()
+    {
+        if (!spinSaw) return;
+
+        // Rotating the saw GameObject gives the blade a simple spinning animation.
+        float spinDirection = reverseSpinWithMovement ? -direction : -1f;
+        transform.Rotate(0f, 0f, rotationSpeed * spinDirection * Time.deltaTime);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

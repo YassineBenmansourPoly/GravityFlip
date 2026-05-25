@@ -10893,7 +10893,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd2f6b3f152596489b251db2c5629d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingSawTrap
-  moveDistance: 5
+  moveDistance: 10
   speed: 5
   moveRightFirst: 1
   disablePlayerOnHit: 1
@@ -11164,7 +11164,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd2f6b3f152596489b251db2c5629d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingSawTrap
-  moveDistance: 18
+  moveDistance: 10
   speed: 5
   moveRightFirst: 1
   disablePlayerOnHit: 1
@@ -12565,9 +12565,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: abd2f6b3f152596489b251db2c5629d7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::MovingSawTrap
-  moveDistance: 6
+  moveDistance: 10
   speed: 5
-  moveRightFirst: 1
+  moveRightFirst: 0
   disablePlayerOnHit: 1
   spinSaw: 1
   rotationSpeed: 150
@@ -13665,7 +13665,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MovingSawTrap
   moveDistance: 10
   speed: 5
-  moveRightFirst: 1
+  moveRightFirst: 0
   disablePlayerOnHit: 1
   spinSaw: 1
   rotationSpeed: 150
