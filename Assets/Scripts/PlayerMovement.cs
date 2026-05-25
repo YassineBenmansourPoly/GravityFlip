@@ -29,9 +29,12 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private SpriteRenderer sr;
 
+    // --- MERGED VARIABLES ---
     private bool isGrounded;
     private bool isDashing;
     private bool canDash = true;
+    private string currentSurface = "";
+    private float footstepTimer = 0f;
     private bool isLevelComplete = false;
 
     void Start()
@@ -74,31 +77,43 @@ public class PlayerMovement : MonoBehaviour
         float move = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(move * moveSpeed, rb.linearVelocity.y);
 
-        if (move > 0)
+        // Flip Sprite based on direction
+        if (move > 0) transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+        else if (move < 0) transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+
+        // 1. FOOTSTEP SOUND LOGIC
+        if (move != 0 && isGrounded)
         {
-            transform.localScale = new Vector3(Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
-        }
-        else if (move < 0)
-        {
-            transform.localScale = new Vector3(-Mathf.Abs(transform.localScale.x), transform.localScale.y, 1f);
+            footstepTimer -= Time.deltaTime;
+            if (footstepTimer <= 0)
+            {
+                if (AudioManager.instance != null) AudioManager.instance.PlayFootstep(currentSurface);
+                footstepTimer = 0.35f;
+            }
         }
     }
 
     void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && IsActuallyGrounded())
+        // 2. JUMP FIX: Use the 'isGrounded' variable that the collision logic calculates
+        if (Input.GetKeyDown(KeyCode.Space) && isGrounded)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
             rb.AddForce(Vector2.up * jumpForce * gravityDirection, ForceMode2D.Impulse);
-            isGrounded = false;
+            isGrounded = false; // Set to false immediately so we can't double jump
+
+            if (AudioManager.instance != null) AudioManager.instance.PlaySFX(AudioManager.instance.jumpSound);
         }
     }
 
+    // --- DASHING LOGIC ---
     void HandleDash()
     {
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && IsActuallyGrounded())
         {
             StartCoroutine(Dash());
+            if (AudioManager.instance != null)
+                AudioManager.instance.PlaySFX(AudioManager.instance.dashSound);
         }
     }
 
@@ -169,87 +184,80 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.G))
         {
-            FlipGravity();
+            gravityDirection *= -1f;
+            rb.gravityScale *= -1f;
+
+            Vector3 scale = transform.localScale;
+            scale.y *= -1f;
+            transform.localScale = scale;
+
+            isGrounded = false;
+            if (AudioManager.instance != null) AudioManager.instance.PlaySFX(AudioManager.instance.flipSound);
         }
-    }
-
-    void FlipGravity()
-    {
-        gravityDirection *= -1f;
-        rb.gravityScale *= -1f;
-
-        Vector3 scale = transform.localScale;
-        scale.y *= -1f;
-        transform.localScale = scale;
-
-        isGrounded = false;
     }
 
     void UpdateAnimations()
     {
-        float move = Mathf.Abs(Input.GetAxisRaw("Horizontal"));
+        float moveInput = Mathf.Abs(Input.GetAxisRaw("Horizontal"));
         float verticalVelocity = rb.linearVelocity.y * gravityDirection;
 
         if (animator != null)
         {
-            animator.SetFloat("Speed", move);
+            // 3. ANIMATION FIX: Ensuring these match your Animator exactly
+            animator.SetFloat("Speed", moveInput);
             animator.SetBool("IsGrounded", isGrounded);
             animator.SetFloat("VerticalVelocity", verticalVelocity);
         }
     }
 
+    // --- PHYSICS & COLLISION LOGIC ---
+
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // If we hit a Hazard, just tell the GameManager to handle it
+        if (collision.gameObject.CompareTag("Hazard"))
+        {
+            FindAnyObjectByType<GameManager>().GameOver();
+            return;
+        }
+
+        if (IsGroundLayer(collision.gameObject))
+        {
+            currentSurface = collision.gameObject.tag;
+            if (AudioManager.instance != null) AudioManager.instance.PlaySFX(AudioManager.instance.landingSound);
+        }
         CheckGroundContact(collision);
     }
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        CheckGroundContact(collision);
-    }
+    private void OnCollisionStay2D(Collision2D collision) { CheckGroundContact(collision); }
 
     private void OnCollisionExit2D(Collision2D collision)
     {
-        if (IsGroundLayer(collision.gameObject))
-        {
-            isGrounded = false;
-        }
+        if (IsGroundLayer(collision.gameObject)) isGrounded = false;
     }
 
     void CheckGroundContact(Collision2D collision)
     {
         if (!IsGroundLayer(collision.gameObject)) return;
-        if (playerCollider == null) return;
 
-        Vector2 validGroundNormal = gravityDirection > 0f
-            ? Vector2.up
-            : Vector2.down;
-
+        // Corrected a small brace syntax error from the conflict block here:
+        Vector2 validGroundNormal = gravityDirection > 0f ? Vector2.up : Vector2.down;
         Bounds bounds = playerCollider.bounds;
 
         for (int i = 0; i < collision.contactCount; i++)
         {
             ContactPoint2D contact = collision.GetContact(i);
+            if (Vector2.Dot(contact.normal, validGroundNormal) < groundNormalThreshold) continue;
 
-            float normalMatch = Vector2.Dot(contact.normal, validGroundNormal);
-            if (normalMatch < groundNormalThreshold)
-                continue;
-
-            bool contactIsAtFeet;
-
-            if (gravityDirection > 0f)
-            {
-                contactIsAtFeet = contact.point.y <= bounds.min.y + groundContactTolerance;
-            }
-            else
-            {
-                contactIsAtFeet = contact.point.y >= bounds.max.y - groundContactTolerance;
-            }
+            bool contactIsAtFeet = (gravityDirection > 0f)
+                ? contact.point.y <= bounds.min.y + groundContactTolerance
+                : contact.point.y >= bounds.max.y - groundContactTolerance;
 
             if (contactIsAtFeet)
             {
                 isGrounded = true;
-                canDash = true;
+                canDash = true; // Kept your dash reset
+                currentSurface = collision.gameObject.tag; // Kept Alnoohy's footstep surface update
                 return;
             }
         }
@@ -257,14 +265,12 @@ public class PlayerMovement : MonoBehaviour
 
     bool IsGroundLayer(GameObject obj)
     {
-        if (groundLayer.value == 0)
-        {
-            return obj.CompareTag("Ground");
-        }
-
+        // 4. TAG RECOGNITION FIX
+        if (obj.CompareTag("Grass") || obj.CompareTag("Rock") || obj.CompareTag("Ground")) return true;
         return (groundLayer.value & (1 << obj.layer)) != 0;
     }
 
+    // --- LEVEL COMPLETE POLISH (Kept Yassine's cleaner version) ---
     public void CompleteLevel()
     {
         isLevelComplete = true;
