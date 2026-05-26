@@ -18,12 +18,11 @@ public class StarManager : MonoBehaviour
 
     public void CollectStar()
     {
-        // 1. Fill the HUD star outline
         if (starsCollected < hudStars.Length)
         {
             hudStars[starsCollected].sprite = filledStarSprite;
 
-            // Tiny "pop" effect so the player notices it filled up
+            // pop effect 
             hudStars[starsCollected].transform.localScale = Vector3.one * 1.3f;
             starsCollected++;
         }
