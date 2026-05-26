@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bca8af2fc03359f4eb6df295d37f8620, type: 3}
+  m_Name: LevelIntroSettings
+  m_EditorClassIdentifier: Assembly-CSharp::LevelIntroSettings
+  globalBackgroundImage: {fileID: -2312609247923782330, guid: 75791225f8130f44cb969909afa7008b, type: 3}
+  backgroundTint: {r: 0.21698111, g: 0.21698111, b: 0.21698111, a: 1}
+  delayBeforeFadeIn: 0.5
+  textFadeInDuration: 1.5
+  textFadeOutDuration: 1
+  delayBeforeBackgroundFade: 0.3
+  backgroundFadeOutDuration: 1
+  fontSize: 50
+  textColor: {r: 1, g: 0.35032216, b: 0.015686274, a: 1}
+  fontAsset: {fileID: 11400000, guid: dc36b3fdc14f47ebb36fd484a67e268a, type: 2}
+  levels: []

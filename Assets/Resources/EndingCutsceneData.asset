@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9bdb3466368d4b24cbc73ba27e8759df, type: 3}
+  m_Name: EndingCutsceneData
+  m_EditorClassIdentifier: Assembly-CSharp::CutsceneData
+  slides:
+  - image: {fileID: 8875762052967859312, guid: cd6803461015f624689dade540fa305e, type: 3}
+    narrativeText: The Dragon Warrior falls to his knees. His fire goes out. His
+      grip on gravity fades.
+    minimumDisplayTime: 3
+  - image: {fileID: 3228681307683998360, guid: d31565555aaf254408de7037b536bfe7, type: 3}
+    narrativeText: The final Gravity Star pulses in the air. I reach for it, and
+      the world holds its breath.
+    minimumDisplayTime: 3
+  - image: {fileID: 739043147375239035, guid: e1cd02dcd8727394e8e68f4f268b103e, type: 3}
+    narrativeText: The stars remember each other. They pull together, singing with
+      energy, and gravity remembers what it's supposed to do.
+    minimumDisplayTime: 4
+  - image: {fileID: 7554708853517437133, guid: 18ffdc49df59dad4692d510859d19fd4, type: 3}
+    narrativeText: The ground settles. The sky clears. Somewhere, a river finds its
+      way downhill for the first time in a long while. The world exhales.
+    minimumDisplayTime: 5
+  - image: {fileID: 6021978654463231455, guid: 615d81d2b4fbe6a4eb53cb68726beb1d, type: 3}
+    narrativeText: The stars are home. The world is whole. And a small adventurer
+      walks on, ready for whatever comes next.
+    minimumDisplayTime: 4
+  - image: {fileID: 0}
+    narrativeText: Thank you for playing GRAVITY FLIP
+    minimumDisplayTime: 4
+  nextSceneName: QUIT
+  fadeDuration: 1.2
+  textAppearDelay: 0.4
+  fontSize: 34
+  textColor: {r: 1, g: 1, b: 1, a: 1}
+  fontAsset: {fileID: 0}
+  continuePrompt: Click or press any key to continue
+  finalSlidePrompt: Press any key to exit the game
+  backgroundMusic: {fileID: 8300000, guid: e7e403aacedc5fb47a2cb00491ec5947, type: 3}
+  musicVolume: 1

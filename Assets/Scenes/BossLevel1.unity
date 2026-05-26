@@ -414,6 +414,8 @@ MonoBehaviour:
   dashDuration: 0.15
   dashCooldown: 0.4
   gravityDirection: 1
+  useContinuousCollision: 1
+  maxFallSpeed: 25
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
@@ -950,7 +952,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d5fbf0024f4fb5428c986d40570d1aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelExit
-  nextSceneName: Level2
+  nextSceneName: EndingCutscene
   delayBeforeLoad: 0.8
 --- !u!114 &1462941082
 MonoBehaviour:
