@@ -1267,6 +1267,9 @@ MonoBehaviour:
   speed: 5
   moveRightFirst: 1
   disablePlayerOnHit: 1
+  spinSaw: 1
+  rotationSpeed: 150
+  reverseSpinWithMovement: 1
 --- !u!212 &420165904
 SpriteRenderer:
   serializedVersion: 2
@@ -1537,6 +1540,9 @@ MonoBehaviour:
   speed: 3
   moveRightFirst: 1
   disablePlayerOnHit: 1
+  spinSaw: 1
+  rotationSpeed: 150
+  reverseSpinWithMovement: 1
 --- !u!212 &461863174
 SpriteRenderer:
   serializedVersion: 2
@@ -1989,6 +1995,9 @@ MonoBehaviour:
   speed: 5
   moveRightFirst: 0
   disablePlayerOnHit: 1
+  spinSaw: 1
+  rotationSpeed: 150
+  reverseSpinWithMovement: 1
 --- !u!212 &577981499
 SpriteRenderer:
   serializedVersion: 2
@@ -2908,7 +2917,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a35c8abdf6896c4d8ccb04192d3d260, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
-  target: {fileID: 0}
+  target: {fileID: 920364159}
   smoothSpeed: 5
   offset: {x: 0, y: 2, z: -10}
 --- !u!114 &715385959
@@ -4644,6 +4653,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 79e69a82278d4cf4c990a5102a1794d3, type: 3}
+--- !u!4 &920364159 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5512761234900043400, guid: 79e69a82278d4cf4c990a5102a1794d3, type: 3}
+  m_PrefabInstance: {fileID: 920364158}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &932289111
 GameObject:
   m_ObjectHideFlags: 0
@@ -15553,6 +15567,9 @@ MonoBehaviour:
   speed: 5
   moveRightFirst: 1
   disablePlayerOnHit: 1
+  spinSaw: 1
+  rotationSpeed: 150
+  reverseSpinWithMovement: 1
 --- !u!212 &1317331450
 SpriteRenderer:
   serializedVersion: 2

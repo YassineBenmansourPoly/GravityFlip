@@ -12136,7 +12136,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d5fbf0024f4fb5428c986d40570d1aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelExit
-  nextSceneName: Level2
+  nextSceneName: Level5
   delayBeforeLoad: 0.8
 --- !u!114 &943016526
 MonoBehaviour:
@@ -14992,7 +14992,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a35c8abdf6896c4d8ccb04192d3d260, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
-  target: {fileID: 0}
+  target: {fileID: 353403240}
   smoothSpeed: 5
   offset: {x: 0, y: 1, z: -10}
 --- !u!114 &1907164018
@@ -16166,3 +16166,4 @@ SceneRoots:
   - {fileID: 1140795014}
   - {fileID: 1774506230}
   - {fileID: 1368700649}
+  - {fileID: 353403240}
