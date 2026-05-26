@@ -6,20 +6,19 @@ public class StarItem : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Make sure your Player object has the tag "Player"
         if (other.CompareTag("Player") && !collected)
         {
             collected = true;
 
-            // 1. Tell the manager to count this star
+            // 1. Tell the star manager to update the HUD icons
             if (StarManager.instance != null)
                 StarManager.instance.CollectStar();
 
-            // 2. Play a sound
+            // 2. Play the star collection sound
             if (AudioManager.instance != null)
                 AudioManager.instance.PlaySFX(AudioManager.instance.starSound);
 
-            // 3. Vanish!
+            // 3. Remove the star from the level
             Destroy(gameObject);
         }
     }
