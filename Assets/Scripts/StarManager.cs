@@ -1,30 +1,55 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class StarManager : MonoBehaviour
 {
     public static StarManager instance;
 
+    [Header("HUD (The icons in the corner)")]
+    public Image[] hudStars;
+    public Sprite filledStarSprite;
+
+    [Header("Level Complete UI")]
     public GameObject victoryPanel;
-    public GameObject[] uiStars; // The 3 stars on your "Game Over/Win" screen
+    public GameObject[] uiStars;
 
     private int starsCollected = 0;
 
-    void Awake() { instance = this; }
+    void Awake()
+    {
+        if (instance == null) instance = this;
+    }
 
     public void CollectStar()
     {
+        int starIndex = starsCollected;
         starsCollected++;
+
+        if (hudStars != null && starIndex < hudStars.Length && hudStars[starIndex] != null)
+        {
+            if (filledStarSprite != null)
+                hudStars[starIndex].sprite = filledStarSprite;
+
+            hudStars[starIndex].transform.localScale = Vector3.one * 1.3f;
+        }
+
         Debug.Log("Stars found: " + starsCollected);
     }
 
     public void OnLevelComplete()
     {
-        victoryPanel.SetActive(true);
+        if (victoryPanel != null)
+            victoryPanel.SetActive(true);
 
-        // Show only the stars the player actually physically touched in the level
-        for (int i = 0; i < starsCollected; i++)
+        if (uiStars == null) return;
+
+        for (int i = 0; i < starsCollected && i < uiStars.Length; i++)
         {
-            if (i < uiStars.Length) uiStars[i].SetActive(true);
+            if (uiStars[i] != null)
+                uiStars[i].SetActive(true);
         }
     }
+
+    // This allows other scripts to see how many stars we have if needed
+    public int GetStarCount() { return starsCollected; }
 }
