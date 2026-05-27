@@ -58,6 +58,9 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdateHearts()
     {
+        if (hearts == null)
+            return;
+
         for (int i = 0; i < hearts.Length; i++)
         {
             if (hearts[i] != null)

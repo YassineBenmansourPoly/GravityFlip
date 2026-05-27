@@ -19,6 +19,12 @@ public static class LevelIntroInstaller
 {
     private static LevelIntroSettings cachedSettings;
     private static bool settingsSearched;
+    private static bool skipNextIntro;
+
+    public static void SkipNextIntro()
+    {
+        skipNextIntro = true;
+    }
 
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
     private static void Initialize()
@@ -34,6 +40,12 @@ public static class LevelIntroInstaller
 
     private static void TryInstall(string sceneName)
     {
+        if (skipNextIntro)
+        {
+            skipNextIntro = false;
+            return;
+        }
+
         // Don't add a second intro if one already exists in the scene
         if (Object.FindAnyObjectByType<LevelIntroUI>() != null)
             return;
