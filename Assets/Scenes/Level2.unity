@@ -11021,7 +11021,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3d5fbf0024f4fb5428c986d40570d1aa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelExit
-  nextSceneName: Level2
+  nextSceneName: Level3
   delayBeforeLoad: 0.8
 --- !u!1001 &1881076972
 PrefabInstance:
