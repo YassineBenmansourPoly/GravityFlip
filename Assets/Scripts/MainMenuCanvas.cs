@@ -35,15 +35,8 @@ public class MainMenuCanvas : MonoBehaviour
 
     private static void CreateForCurrentScene()
     {
-        if (FindFirstObjectByType<MainMenuCanvas>() != null)
-            return;
-
-        Scene activeScene = SceneManager.GetActiveScene();
-        if (!ShouldShowMenuInScene(activeScene.name))
-            return;
-
-        GameObject menuObject = new GameObject("Main Menu Canvas");
-        menuObject.AddComponent<MainMenuCanvas>();
+        // StarManager owns the shared HUD/menu now. This older menu builder is kept
+        // disabled so builds do not show duplicate "Press M" prompts.
     }
 
     private static bool ShouldShowMenuInScene(string sceneName)

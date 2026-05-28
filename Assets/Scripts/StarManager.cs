@@ -65,10 +65,14 @@ public class StarManager : MonoBehaviour
         if (instance != null)
             return instance;
 
-        StarManager existingManager = FindFirstObjectByType<StarManager>();
-        if (existingManager != null)
+        StarManager[] existingManagers = FindObjectsByType<StarManager>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+        if (existingManagers.Length > 0)
         {
-            instance = existingManager;
+            instance = existingManagers[0];
+
+            for (int i = 1; i < existingManagers.Length; i++)
+                Destroy(existingManagers[i].gameObject);
+
             return instance;
         }
 
@@ -79,6 +83,12 @@ public class StarManager : MonoBehaviour
 
     void Awake()
     {
+        if (instance != null && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
         instance = this;
     }
 
@@ -115,7 +125,7 @@ public class StarManager : MonoBehaviour
         RefreshStarRequirement();
         DrawMainMenu();
 
-        if (starsNeededForExit == 0)
+        if (starsNeededForExit == 0 || starsLeftText != null)
             return;
 
         BuildGUIStyles();
