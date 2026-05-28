@@ -17,14 +17,14 @@ public static class Level4DoubleJumpInstaller
 
     private static void AddDoubleJumpIfThisIsLevel4(Scene scene)
     {
-        if (scene.name != "Level4")
+        if (scene.name != "Level4" && scene.name != "Level5")
             return;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null || player.GetComponent<DoubleJump>() != null)
             return;
 
-        // Level 4 is the first level that allows one extra jump in mid-air.
+        // Level 4 and Level 5 allow one extra jump in mid-air.
         player.AddComponent<DoubleJump>();
     }
 }

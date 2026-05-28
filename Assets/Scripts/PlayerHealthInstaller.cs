@@ -17,13 +17,11 @@ public static class PlayerHealthInstaller
 
     private static void AddHealthIfNeeded(Scene scene)
     {
-        if (scene.name == "Level1" || scene.name == "Level2" || scene.name == "ActualLevel2")
-            return;
-
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null || player.GetComponent<PlayerHealth>() != null)
             return;
 
+        // Every gameplay level should give the player health, even if the scene uses an older Player prefab.
         player.AddComponent<PlayerHealth>();
     }
 }

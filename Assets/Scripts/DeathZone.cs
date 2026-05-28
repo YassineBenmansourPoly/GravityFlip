@@ -11,6 +11,12 @@ public class DeathZone : MonoBehaviour
         if (collision.CompareTag("Player") && !isDead)
         {
             isDead = true;
+            if (CheckpointManager.TryRespawnPlayer(collision.gameObject))
+            {
+                isDead = false;
+                return;
+            }
+
             // ... rest of your code
         }
     }

@@ -32,7 +32,7 @@ public class PlayerFireballShooter : MonoBehaviour
     {
         bool shootPressed = Input.GetKeyDown(shootKey)
             || Input.GetKeyDown(alternateShootKey)
-            || (allowMouseButton && Input.GetMouseButtonDown(0));
+            || (allowMouseButton && (Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1)));
 
         if (shootPressed)
             Shoot();

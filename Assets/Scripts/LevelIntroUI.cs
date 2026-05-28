@@ -20,6 +20,8 @@ using System.Collections.Generic;
 /// </summary>
 public class LevelIntroUI : MonoBehaviour
 {
+    public static bool IsIntroPlaying { get; private set; }
+
     [Header("Story Text")]
     [TextArea(5, 15)]
     [Tooltip("The narrative text displayed on the black screen at the start of the level.")]
@@ -101,10 +103,12 @@ public class LevelIntroUI : MonoBehaviour
     public void BeginIntro()
     {
         isInitialized = true;
+        IsIntroPlaying = true;
 
         // If there is no text, skip the intro entirely
         if (string.IsNullOrWhiteSpace(introText))
         {
+            IsIntroPlaying = false;
             Destroy(gameObject);
             return;
         }
@@ -268,6 +272,7 @@ public class LevelIntroUI : MonoBehaviour
 
         // Step 6 — Unfreeze the player and clean up
         UnfreezePlayer();
+        IsIntroPlaying = false;
         Destroy(gameObject);
     }
 
