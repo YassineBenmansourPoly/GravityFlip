@@ -15,8 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Gravity")]
     public float gravityDirection = 1f;
-    [SerializeField] private float gravityFlipStartDelay = 0.45f;
-    [SerializeField] private float gravityFlipCooldown = 3f;
+    [SerializeField] private float gravityFlipStartDelay = 3f;
+    [SerializeField] private float gravityFlipCooldown = 2f;
 
     [Header("Collision Safety")]
     [SerializeField] private bool useContinuousCollision = true;
@@ -57,7 +57,7 @@ public class PlayerMovement : MonoBehaviour
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
 
         string sceneName = SceneManager.GetActiveScene().name;
-        useGravityFlipCooldown = ShouldDelayGravityFlip(sceneName);
+        useGravityFlipCooldown = ShouldUseGravityFlipCooldown(sceneName);
         dashUnlocked = ShouldUnlockDash(sceneName);
         StartGravityFlipDelayIfNeeded();
     }
@@ -224,7 +224,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void StartGravityFlipDelayIfNeeded()
     {
-        if (gravityFlipDelayStarted || !ShouldDelayGravityFlip(SceneManager.GetActiveScene().name))
+        if (gravityFlipDelayStarted || !ShouldUseGravityFlipStartDelay(SceneManager.GetActiveScene().name))
             return;
 
         gravityFlipDelayStarted = true;
@@ -241,7 +241,7 @@ public class PlayerMovement : MonoBehaviour
         gravityFlipLockedUntil = Time.unscaledTime + gravityFlipStartDelay;
     }
 
-    private bool ShouldDelayGravityFlip(string sceneName)
+    private bool ShouldUseGravityFlipStartDelay(string sceneName)
     {
         return sceneName == "Level1"
             || sceneName == "Level2"
@@ -249,6 +249,14 @@ public class PlayerMovement : MonoBehaviour
             || sceneName == "Level5"
             || sceneName == "Level6"
             || sceneName == "Level7";
+    }
+
+    private bool ShouldUseGravityFlipCooldown(string sceneName)
+    {
+        if (!sceneName.StartsWith("Level"))
+            return false;
+
+        return sceneName != "Level4" && sceneName != "Level8";
     }
 
     private bool ShouldUnlockDash(string sceneName)
@@ -284,8 +292,11 @@ public class PlayerMovement : MonoBehaviour
         // If we hit a Hazard, just tell the GameManager to handle it
         if (collision.gameObject.CompareTag("Hazard"))
         {
-            if (!CheckpointManager.TryRespawnPlayer(gameObject))
-                FindAnyObjectByType<GameManager>().GameOver();
+            GameManager gameManager = FindAnyObjectByType<GameManager>();
+            if (gameManager == null)
+                gameManager = new GameObject("GameManager").AddComponent<GameManager>();
+
+            gameManager.GameOver(gameObject);
 
             return;
         }

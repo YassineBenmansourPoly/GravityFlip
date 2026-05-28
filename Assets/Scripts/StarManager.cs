@@ -86,6 +86,7 @@ public class StarManager : MonoBehaviour
     {
         RefreshStarRequirement();
         HideLegacyStarHud();
+        PositionCanvasHearts();
         BuildCounterUIIfNeeded();
         UpdateCounterUI();
     }
@@ -246,6 +247,30 @@ public class StarManager : MonoBehaviour
         starsLeftText.text = starsLeft == 0
             ? "All stars collected"
             : "Stars left: " + starsLeft;
+    }
+
+    private void PositionCanvasHearts()
+    {
+        PositionHeart("Heart1", 145f);
+        PositionHeart("Heart2", 195f);
+        PositionHeart("Heart3", 245f);
+    }
+
+    private void PositionHeart(string heartName, float x)
+    {
+        RectTransform[] rectTransforms = FindObjectsByType<RectTransform>(FindObjectsInactive.Include, FindObjectsSortMode.None);
+
+        foreach (RectTransform rect in rectTransforms)
+        {
+            if (rect.name != heartName)
+                continue;
+
+            rect.anchorMin = new Vector2(0f, 1f);
+            rect.anchorMax = new Vector2(0f, 1f);
+            rect.pivot = new Vector2(0f, 1f);
+            rect.anchoredPosition = new Vector2(x, -14f);
+            rect.localScale = Vector3.one * 1.5f;
+        }
     }
 
     private void HideLegacyStarHud()

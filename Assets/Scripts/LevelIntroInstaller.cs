@@ -207,8 +207,8 @@ public static class LevelIntroInstaller
                     "His presence is like a weight pressing down on everything.\n\n" +
                     "He knows I'm coming.\nAnd he's waiting.";
 
-            // ---- LEVEL 8 (BOSS): The Dragon Warrior ----
-            case "BossLevel1":
+            // ---- LEVEL 10: The Dragon Warrior ----
+            case "Level10":
                 displayDuration = 5f;
                 return
                     "He stands waiting, flames in his hands.\n" +

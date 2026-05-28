@@ -7,24 +7,33 @@ public static class Level4DoubleJumpInstaller
     private static void InstallWhenLevelLoads()
     {
         SceneManager.sceneLoaded += OnSceneLoaded;
-        AddDoubleJumpIfThisIsLevel4(SceneManager.GetActiveScene());
+        AddDoubleJumpIfUnlocked(SceneManager.GetActiveScene());
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        AddDoubleJumpIfThisIsLevel4(scene);
+        AddDoubleJumpIfUnlocked(scene);
     }
 
-    private static void AddDoubleJumpIfThisIsLevel4(Scene scene)
+    private static void AddDoubleJumpIfUnlocked(Scene scene)
     {
-        if (scene.name != "Level4" && scene.name != "Level5")
+        if (!ShouldHaveDoubleJump(scene.name))
             return;
 
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player == null || player.GetComponent<DoubleJump>() != null)
             return;
 
-        // Level 4 and Level 5 allow one extra jump in mid-air.
+        // Double jump unlocks in Level 4 and stays available for later levels.
         player.AddComponent<DoubleJump>();
+    }
+
+    private static bool ShouldHaveDoubleJump(string sceneName)
+    {
+        if (!sceneName.StartsWith("Level"))
+            return false;
+
+        string numberText = sceneName.Substring("Level".Length);
+        return int.TryParse(numberText, out int levelNumber) && levelNumber >= 4;
     }
 }

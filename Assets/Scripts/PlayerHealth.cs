@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -29,10 +30,12 @@ public class PlayerHealth : MonoBehaviour
     private Animator animator;
     private PlayerMovement playerMovement;
     private Color originalColor;
+    private Vector3 originalScale;
 
     void Start()
     {
         currentHealth = maxHealth;
+        originalScale = transform.localScale;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
@@ -71,13 +74,42 @@ public class PlayerHealth : MonoBehaviour
         if (hearts == null)
             return;
 
+        Image[] orderedHearts = GetHeartsLeftToRight();
+
+        for (int i = 0; i < orderedHearts.Length; i++)
+        {
+            ResizeHeart(orderedHearts[i]);
+            orderedHearts[i].gameObject.SetActive(i < currentHealth);
+        }
+    }
+
+    private Image[] GetHeartsLeftToRight()
+    {
+        List<Image> orderedHearts = new List<Image>();
+
         for (int i = 0; i < hearts.Length; i++)
         {
             if (hearts[i] != null)
-            {
-                hearts[i].gameObject.SetActive(i < currentHealth);
-            }
+                orderedHearts.Add(hearts[i]);
         }
+
+        orderedHearts.Sort((first, second) => GetHeartX(first).CompareTo(GetHeartX(second)));
+        return orderedHearts.ToArray();
+    }
+
+    private float GetHeartX(Image heart)
+    {
+        RectTransform rect = heart.GetComponent<RectTransform>();
+        return rect == null ? 0f : rect.anchoredPosition.x;
+    }
+
+    private void ResizeHeart(Image heart)
+    {
+        RectTransform rect = heart.GetComponent<RectTransform>();
+        if (rect == null)
+            return;
+
+        rect.localScale = Vector3.one * 1.5f;
     }
 
     IEnumerator HitFeedback()
@@ -174,7 +206,7 @@ public class PlayerHealth : MonoBehaviour
             gameManager = new GameObject("GameManager").AddComponent<GameManager>();
 
         if (gameManager != null)
-            gameManager.GameOver();
+            gameManager.GameOver(gameObject);
     }
 
     public void RestoreFullHealth()
@@ -187,6 +219,7 @@ public class PlayerHealth : MonoBehaviour
             spriteRenderer.color = originalColor;
 
         transform.rotation = Quaternion.identity;
+        transform.localScale = originalScale;
 
         if (playerMovement != null)
             playerMovement.enabled = true;

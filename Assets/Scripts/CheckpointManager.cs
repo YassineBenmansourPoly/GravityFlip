@@ -7,6 +7,7 @@ public class CheckpointManager : MonoBehaviour
 
     private Vector3 checkpointPosition;
     private bool hasCheckpoint;
+    private bool hasTouchedCheckpoint;
     private string activeSceneName;
     private bool shouldUseCheckpointsInScene;
 
@@ -54,11 +55,29 @@ public class CheckpointManager : MonoBehaviour
         return true;
     }
 
+    public static bool HasCheckpointAvailable()
+    {
+        CheckpointManager manager = EnsureInstance();
+        return manager != null && manager.HasCheckpointForCurrentScene();
+    }
+
+    public static bool HasTouchedCheckpointAvailable()
+    {
+        CheckpointManager manager = EnsureInstance();
+        return manager != null && manager.HasCheckpointForCurrentScene() && manager.hasTouchedCheckpoint;
+    }
+
     public void SetCheckpoint(Vector3 position)
+    {
+        SetCheckpoint(position, true);
+    }
+
+    public void SetCheckpoint(Vector3 position, bool touchedCheckpoint)
     {
         checkpointPosition = position;
         checkpointPosition.z = 0f;
         hasCheckpoint = true;
+        hasTouchedCheckpoint = touchedCheckpoint;
         activeSceneName = SceneManager.GetActiveScene().name;
     }
 
@@ -66,6 +85,7 @@ public class CheckpointManager : MonoBehaviour
     {
         activeSceneName = scene.name;
         hasCheckpoint = false;
+        hasTouchedCheckpoint = false;
         shouldUseCheckpointsInScene = ShouldUseCheckpoints(scene.name);
 
         if (!shouldUseCheckpointsInScene)
@@ -84,7 +104,7 @@ public class CheckpointManager : MonoBehaviour
     {
         GameObject player = GameObject.FindGameObjectWithTag("Player");
         if (player != null)
-            SetCheckpoint(player.transform.position);
+            SetCheckpoint(player.transform.position, false);
     }
 
     private bool HasCheckpointForCurrentScene()

@@ -65,6 +65,11 @@ public class DoubleJumpUnlockPopup : MonoBehaviour
                 body = "Press Right Click to shoot fireballs and break brown tiles.";
                 return true;
 
+            case "Level9":
+                title = "Fireball Unlocked";
+                body = "Press Left Click or Right Click to shoot fireballs.";
+                return true;
+
             default:
                 title = "";
                 body = "";

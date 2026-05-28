@@ -93,7 +93,7 @@ public class LevelIntroSettings : ScriptableObject
             introText = "I can feel him now — the Dragon Warrior.\n\nHis presence is like a weight pressing down on everything.\n\nHe knows I'm coming.\nAnd he's waiting." 
         },
         new LevelEntry { 
-            sceneName = "BossLevel1", 
+            sceneName = "Level10", 
             displayDuration = 5f, 
             introText = "He stands waiting, flames in his hands.\nAll the stolen gravity bends around him.\n\nOne of us will fall.\nI didn't come this far to lose." 
         }
@@ -140,7 +140,7 @@ public class LevelIntroSettings : ScriptableObject
                 introText = "I can feel him now — the Dragon Warrior.\n\nHis presence is like a weight pressing down on everything.\n\nHe knows I'm coming.\nAnd he's waiting." 
             },
             new LevelEntry { 
-                sceneName = "BossLevel1", 
+                sceneName = "Level10", 
                 displayDuration = 5f, 
                 introText = "He stands waiting, flames in his hands.\nAll the stolen gravity bends around him.\n\nOne of us will fall.\nI didn't come this far to lose." 
             }
