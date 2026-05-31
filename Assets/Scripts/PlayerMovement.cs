@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -14,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Gravity")]
     public float gravityDirection = 1f;
+    [SerializeField] private float gravityFlipStartDelay = 3f;
+    [SerializeField] private float gravityFlipCooldown = 2f;
 
     [Header("Collision Safety")]
     [SerializeField] private bool useContinuousCollision = true;
@@ -36,6 +39,10 @@ public class PlayerMovement : MonoBehaviour
     private string currentSurface = "";
     private float footstepTimer = 0f;
     private bool isLevelComplete = false;
+    private float gravityFlipLockedUntil;
+    private bool gravityFlipDelayStarted;
+    private bool useGravityFlipCooldown;
+    private bool dashUnlocked;
 
     void Start()
     {
@@ -48,6 +55,16 @@ public class PlayerMovement : MonoBehaviour
 
         if (useContinuousCollision)
             rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
+
+        string sceneName = SceneManager.GetActiveScene().name;
+        useGravityFlipCooldown = ShouldUseGravityFlipCooldown(sceneName);
+        dashUnlocked = ShouldUnlockDash(sceneName);
+        StartGravityFlipDelayIfNeeded();
+    }
+
+    private void OnEnable()
+    {
+        StartGravityFlipDelayIfNeeded();
     }
 
     void Update()
@@ -109,6 +126,9 @@ public class PlayerMovement : MonoBehaviour
     // --- DASHING LOGIC ---
     void HandleDash()
     {
+        if (!dashUnlocked)
+            return;
+
         if (Input.GetKeyDown(KeyCode.LeftShift) && canDash && IsActuallyGrounded())
         {
             StartCoroutine(Dash());
@@ -182,6 +202,9 @@ public class PlayerMovement : MonoBehaviour
 
     void HandleGravityFlip()
     {
+        if (Time.unscaledTime < gravityFlipLockedUntil)
+            return;
+
         if (Input.GetKeyDown(KeyCode.G))
         {
             gravityDirection *= -1f;
@@ -193,7 +216,59 @@ public class PlayerMovement : MonoBehaviour
 
             isGrounded = false;
             if (AudioManager.instance != null) AudioManager.instance.PlaySFX(AudioManager.instance.flipSound);
+
+            if (useGravityFlipCooldown)
+                gravityFlipLockedUntil = Time.unscaledTime + gravityFlipCooldown;
         }
+    }
+
+    private void StartGravityFlipDelayIfNeeded()
+    {
+        if (gravityFlipDelayStarted || !ShouldUseGravityFlipStartDelay(SceneManager.GetActiveScene().name))
+            return;
+
+        gravityFlipDelayStarted = true;
+        StartCoroutine(DelayGravityFlipAfterIntro());
+    }
+
+    private IEnumerator DelayGravityFlipAfterIntro()
+    {
+        yield return null;
+
+        while (LevelIntroUI.IsIntroPlaying || FindFirstObjectByType<LevelIntroUI>() != null)
+            yield return null;
+
+        gravityFlipLockedUntil = Time.unscaledTime + gravityFlipStartDelay;
+    }
+
+    private bool ShouldUseGravityFlipStartDelay(string sceneName)
+    {
+        return sceneName == "Level1"
+            || sceneName == "Level2"
+            || sceneName == "Level3"
+            || sceneName == "Level5"
+            || sceneName == "Level6"
+            || sceneName == "Level7";
+    }
+
+    private bool ShouldUseGravityFlipCooldown(string sceneName)
+    {
+        if (!sceneName.StartsWith("Level"))
+            return false;
+
+        return sceneName != "Level4" && sceneName != "Level8";
+    }
+
+    private bool ShouldUnlockDash(string sceneName)
+    {
+        if (sceneName == "BossLevel1")
+            return true;
+
+        if (!sceneName.StartsWith("Level"))
+            return false;
+
+        string numberText = sceneName.Substring("Level".Length);
+        return int.TryParse(numberText, out int levelNumber) && levelNumber >= 6;
     }
 
     void UpdateAnimations()
@@ -217,7 +292,12 @@ public class PlayerMovement : MonoBehaviour
         // If we hit a Hazard, just tell the GameManager to handle it
         if (collision.gameObject.CompareTag("Hazard"))
         {
-            FindAnyObjectByType<GameManager>().GameOver();
+            GameManager gameManager = FindAnyObjectByType<GameManager>();
+            if (gameManager == null)
+                gameManager = new GameObject("GameManager").AddComponent<GameManager>();
+
+            gameManager.GameOver(gameObject);
+
             return;
         }
 
@@ -283,5 +363,32 @@ public class PlayerMovement : MonoBehaviour
 
         if (sr != null)
             sr.enabled = false;
+    }
+
+    public void ResetAfterRespawn()
+    {
+        StopAllCoroutines();
+        isLevelComplete = false;
+        isDashing = false;
+        canDash = true;
+        isGrounded = false;
+
+        if (rb != null)
+        {
+            rb.simulated = true;
+            rb.gravityScale = Mathf.Abs(rb.gravityScale) * gravityDirection;
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+        }
+
+        if (sr != null)
+            sr.enabled = true;
+
+        if (animator != null)
+        {
+            animator.SetFloat("Speed", 0f);
+            animator.SetBool("IsGrounded", false);
+            animator.SetFloat("VerticalVelocity", 0f);
+        }
     }
 }

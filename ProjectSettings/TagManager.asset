@@ -10,6 +10,7 @@ TagManager:
   - Rock
   - Hazard
   - Fruit
+  - Enemy
   layers:
   - Default
   - TransparentFX

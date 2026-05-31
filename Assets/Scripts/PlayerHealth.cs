@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using System.Collections.Generic;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -17,17 +18,29 @@ public class PlayerHealth : MonoBehaviour
     public Color hitColor = Color.red;
     public float knockbackForce = 6f;
 
+    [Header("Death")]
+    public string deathAnimationStateName = "Player_Death";
+    public float deathAnimationDuration = 0.8f;
+    public float deathSpinSpeed = 360f;
+
     private bool isInvincible;
+    private bool isDead;
     private SpriteRenderer spriteRenderer;
     private Rigidbody2D rb;
+    private Animator animator;
+    private PlayerMovement playerMovement;
     private Color originalColor;
+    private Vector3 originalScale;
 
     void Start()
     {
         currentHealth = maxHealth;
+        originalScale = transform.localScale;
 
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
+        playerMovement = GetComponent<PlayerMovement>();
 
         if (spriteRenderer != null)
         {
@@ -39,7 +52,7 @@ public class PlayerHealth : MonoBehaviour
 
     public void TakeDamage(int damageAmount)
     {
-        if (isInvincible) return;
+        if (isInvincible || isDead) return;
 
         currentHealth -= damageAmount;
         currentHealth = Mathf.Clamp(currentHealth, 0, maxHealth);
@@ -58,13 +71,45 @@ public class PlayerHealth : MonoBehaviour
 
     void UpdateHearts()
     {
+        if (hearts == null)
+            return;
+
+        Image[] orderedHearts = GetHeartsLeftToRight();
+
+        for (int i = 0; i < orderedHearts.Length; i++)
+        {
+            ResizeHeart(orderedHearts[i]);
+            orderedHearts[i].gameObject.SetActive(i < currentHealth);
+        }
+    }
+
+    private Image[] GetHeartsLeftToRight()
+    {
+        List<Image> orderedHearts = new List<Image>();
+
         for (int i = 0; i < hearts.Length; i++)
         {
             if (hearts[i] != null)
-            {
-                hearts[i].gameObject.SetActive(i < currentHealth);
-            }
+                orderedHearts.Add(hearts[i]);
         }
+
+        orderedHearts.Sort((first, second) => GetHeartX(first).CompareTo(GetHeartX(second)));
+        return orderedHearts.ToArray();
+    }
+
+    private float GetHeartX(Image heart)
+    {
+        RectTransform rect = heart.GetComponent<RectTransform>();
+        return rect == null ? 0f : rect.anchoredPosition.x;
+    }
+
+    private void ResizeHeart(Image heart)
+    {
+        RectTransform rect = heart.GetComponent<RectTransform>();
+        if (rect == null)
+            return;
+
+        rect.localScale = Vector3.one * 1.5f;
     }
 
     IEnumerator HitFeedback()
@@ -107,13 +152,78 @@ public class PlayerHealth : MonoBehaviour
 
     void Die()
     {
-        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        if (isDead)
+            return;
 
-        if (gameManager != null)
+        StartCoroutine(DeathSequence());
+    }
+
+    IEnumerator DeathSequence()
+    {
+        isDead = true;
+        isInvincible = true;
+
+        if (playerMovement != null)
+            playerMovement.enabled = false;
+
+        if (rb != null)
         {
-            gameManager.GameOver();
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.simulated = false;
         }
 
-        gameObject.SetActive(false);
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
+
+        if (animator != null && !string.IsNullOrEmpty(deathAnimationStateName))
+            animator.Play(deathAnimationStateName, 0, 0f);
+
+        float timer = 0f;
+        Vector3 startScale = transform.localScale;
+
+        while (timer < deathAnimationDuration)
+        {
+            float progress = deathAnimationDuration <= 0f ? 1f : timer / deathAnimationDuration;
+
+            // Simple fallback death animation in case the Animator clip has no visible frames yet.
+            transform.Rotate(0f, 0f, deathSpinSpeed * Time.unscaledDeltaTime);
+            transform.localScale = Vector3.Lerp(startScale, startScale * 0.65f, progress);
+
+            if (spriteRenderer != null)
+            {
+                Color color = originalColor;
+                color.a = Mathf.Lerp(1f, 0.25f, progress);
+                spriteRenderer.color = color;
+            }
+
+            timer += Time.unscaledDeltaTime;
+            yield return null;
+        }
+
+        GameManager gameManager = FindFirstObjectByType<GameManager>();
+        if (gameManager == null)
+            gameManager = new GameObject("GameManager").AddComponent<GameManager>();
+
+        if (gameManager != null)
+            gameManager.GameOver(gameObject);
+    }
+
+    public void RestoreFullHealth()
+    {
+        currentHealth = maxHealth;
+        isInvincible = false;
+        isDead = false;
+
+        if (spriteRenderer != null)
+            spriteRenderer.color = originalColor;
+
+        transform.rotation = Quaternion.identity;
+        transform.localScale = originalScale;
+
+        if (playerMovement != null)
+            playerMovement.enabled = true;
+
+        UpdateHearts();
     }
 }

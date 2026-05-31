@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 public class DeathZone : MonoBehaviour
 {
     private bool isDead = false; // Prevents the sound from playing multiple times
@@ -11,13 +9,12 @@ public class DeathZone : MonoBehaviour
         if (collision.CompareTag("Player") && !isDead)
         {
             isDead = true;
-            // ... rest of your code
+
+            GameManager gameManager = FindFirstObjectByType<GameManager>();
+            if (gameManager == null)
+                gameManager = new GameObject("GameManager").AddComponent<GameManager>();
+
+            gameManager.GameOver(collision.gameObject);
         }
-    }
-
-
-    void RestartLevel()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 }
